@@ -24,7 +24,7 @@ Give examples
 First clone this project from github
 
 ```
-git clone https://
+git clone https://github.com/anhhoangiot/people_recognition_pi.git
 ```
 Then run this command
 ```
