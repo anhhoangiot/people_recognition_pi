@@ -15,10 +15,6 @@ These instructions will get you a copy of the project up and running on your loc
 2. Raspian and python preinstalled on your Pi
 3. Python 2.7 and OpenCV 2 pre-installed
 
-```
-Give examples
-```
-
 ### Getting started
 
 First clone this project from github
