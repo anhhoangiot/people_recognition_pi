@@ -27,13 +27,16 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 import cognitive_face
 import abc
 import json
+from commons import Utilities
 
 class Cognitive(object):
 	def __init__(self):
 		super(Cognitive, self).__init__()
 		self.api = cognitive_face
-		KEY = '8ce25bf3845a42fcbfc41b406fdcac88'
-		self.api.Key.set(KEY)
+		with open(Utilities.absolutePathForFile(__file__,'secret.json')) as data_file:
+			data = json.load(data_file)
+			KEY = data['secret']
+			self.api.Key.set(KEY)
 
 	@abc.abstractmethod
 	def processResponse(self, response, callback=None):

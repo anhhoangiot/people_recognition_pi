@@ -40,7 +40,7 @@ def setup(condition):
 def start(condition):
 	with condition:
 		condition.wait()
-		group = ModelFactory.ownerGroup()
+		group = ModelFactory.registeredUsersGroup()
 		camera = CameraController()
 		if group.activeRecords.containsPerson() == False:
 			camera.registerPerson()

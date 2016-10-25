@@ -37,7 +37,7 @@ class CameraController(object):
 		self.__registerPersonWithName(name)
 
 	def __registerPersonWithName(self, name):
-		group = ModelFactory.ownerGroup()
+		group = ModelFactory.registeredUsersGroup()
 		group.save()
 		person = group.newPersonWithName(name)
 		person.save()
@@ -48,9 +48,9 @@ class CameraController(object):
 		group.cognitive.train()
 
 	def idetifyPerson(self):
-		ownerGroup = ModelFactory.ownerGroup()
+		registeredUsersGroup = ModelFactory.registeredUsersGroup()
 		faces = self.__record(False)
-		ownerGroup.identify(faces)		
+		registeredUsersGroup.identify(faces)		
 
 	def __record(self, isRegister):
 		print 'Start capturing...'

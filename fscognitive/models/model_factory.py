@@ -27,9 +27,9 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 from person_group import PersonGroup
 
 class ModelFactory(object):
-	@staticmethod
-	def ownerGroup():
-		return PersonGroup('face_recognizer_robot_raspberry_pi', 'owner')
+    @staticmethod
+    def registeredUsersGroup():
+        return PersonGroup('face_recognizer_robot_raspberry_pi', 'owner')
 
 	@staticmethod
 	def guessGroup():
