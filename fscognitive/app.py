@@ -36,14 +36,13 @@ def setup(condition):
 	with condition:
 		condition.notifyAll()
 
-def start(condition, datasets=None, interval=0):
+def start(condition, data_path=None, interval=0):
 	with condition:
 		group = ModelFactory.registeredUsersGroup()
 		camera = CameraController()
-		if datasets:
+		if data_path:
 			condition.wait()
-			if group.activeRecords.containsPerson() == False:
-				camera.registerPerson()
+			camera.registerGroup(data_path)
 		if interval > 0:
 			while True:
 				camera.idetifyPerson()
@@ -51,13 +50,13 @@ def start(condition, datasets=None, interval=0):
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-d', '--datasets')
+	parser.add_argument('-d', '--data_path')
 	parser.add_argument('-i', '--interval', type=float)
 	args = parser.parse_args()
 	condition = threading.Condition()
-	if args.datasets:
+	if args.data_path:
 		setUpThread = threading.Thread(name="setup", target=setup, args=(condition,))
-		mainThread = threading.Thread(name="main", target=start, args=(condition, args.datasets, 0,))
+		mainThread = threading.Thread(name="main", target=start, args=(condition, args.data_path, 0,))
 		setUpThread.start()
 		mainThread.start()
 	if args.interval:

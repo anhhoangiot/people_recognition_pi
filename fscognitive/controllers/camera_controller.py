@@ -27,25 +27,49 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 from models import ModelFactory
 from models import Confidence
 from core.face_recognizer import FaceRecognizer
+from commons import Utilities
+import os
+import time
 
 class CameraController(object):
 	def __init__(self):
 		super(CameraController, self).__init__()
 
-	def registerPerson(self):
-		name = raw_input('Name:')
-		self.__registerPersonWithName(name)
+	def registerGroup(self, data_path):
+		if data_path == 'default':
+			data_path = Utilities.defaultDataPath()
+		if Utilities.fileExistsAtPath(data_path):
+			for folder in os.listdir(data_path):
+				group = ModelFactory.registeredUsersGroup()
+				group.save()
+				self.__registerPersonWithDataAtPath(folder)
 
-	def __registerPersonWithName(self, name):
-		group = ModelFactory.registeredUsersGroup()
-		group.save()
-		person = group.newPersonWithName(name)
-		person.save()
-		faces = self.__record(True)
-		for face in faces:
-			personFace = person.newFaceFromImage(face)
-			personFace.save()
+	def __registerPersonWithDataAtPath(self, folder):
+		data_path = Utilities.absolutePathForFile(
+			Utilities.defaultDataPath(),
+			folder
+		)
+
+		with open(os.path.join(data_path, 'name.txt'), 'r') as file:
+			name = file.read()
+			group = ModelFactory.registeredUsersGroup()
+			person = group.newPersonWithName(name)
+			person.save()
+
+		files = os.listdir(data_path)
+
+		for file in files:
+			if file != 'name.txt':
+				personFace = person.newFaceFromImage(os.path.join(data_path, file))
+				personFace.save()
+
 		group.cognitive.train()
+
+		while True:
+			train_result = group.cognitive.trainingStatus()
+			if train_result['status'] == 'succeeded':
+				break
+			time.sleep(1)
 
 	def idetifyPerson(self):
 		registeredUsersGroup = ModelFactory.registeredUsersGroup()

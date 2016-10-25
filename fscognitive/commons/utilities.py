@@ -25,6 +25,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 '''
 
 import os
+import sys
 
 class Utilities:
 	@staticmethod
@@ -48,3 +49,11 @@ class Utilities:
 	def absolutePathForFile(directory, fileName):
 		dir = os.path.dirname(directory)
 		return os.path.join(dir, fileName)
+
+	@staticmethod
+	def projectPath():
+		return os.path.dirname(__file__).strip('commons/')
+
+	@staticmethod
+	def defaultDataPath():
+		return os.path.join(Utilities.projectPath(), 'resources\\datasets\\')
