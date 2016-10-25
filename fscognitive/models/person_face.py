@@ -29,7 +29,7 @@ from core.cognitive import PersonFaceCognitive
 from base_model import BaseModel
 
 class PersonFace(BaseModel):
-	def __init__(self, person, image):
+	def __init__(self, person=None, image=None):
 		super(PersonFace, self).__init__()
 		self.person = person
 		self.image = image

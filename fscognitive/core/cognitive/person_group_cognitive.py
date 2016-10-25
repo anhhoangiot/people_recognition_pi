@@ -32,6 +32,18 @@ class PersonGroupCognitive(Cognitive):
 		super(PersonGroupCognitive, self).__init__()
 		self.group = group
 
+	def identify(self, faces):
+		try:
+			response = self.api.face.identify(faces, self.group.id)
+			people = self.dictionarize(response)
+			candidates = []
+			for person in people:
+				candidate = person['candidates'][0]['personId']
+				candidates.append(candidate)
+			return candidates
+		except self.api.CognitiveFaceException as e:
+			return []
+
 	def save(self):
 		if self.isExisted() == False:
 			try:
@@ -50,7 +62,7 @@ class PersonGroupCognitive(Cognitive):
 			return False
 
 	def train(self):
-		result = self.api.person_group.train(self.groupId)
+		result = self.api.person_group.train(self.group.id)
 		print 'Enqueue group training task'
 		self.processResponse(result, self.printResponse)
 

@@ -50,6 +50,13 @@ class PersonActiveRecords(BaseActiveRecords):
 		print 'Person id is missing'
 		return False
 
+	def find(self, id):
+		getOwner = '''
+			SELECT name FROM person WHERE personId="%s"
+		''' % id
+		people = self.executeQuery(getOwner)
+		return people.fetchone()
+
 	def __insert(self):
 		insertPerson = '''
 			INSERT INTO person VALUES ("%s", "%s", "%s")

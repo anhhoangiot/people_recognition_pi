@@ -29,7 +29,7 @@ from person_group import PersonGroup
 class ModelFactory(object):
 	@staticmethod
 	def ownerGroup():
-		return PersonGroup('speech_led_controller_poc_group', 'owner')
+		return PersonGroup('face_recognizer_robot_raspberry_pi', 'owner')
 
 	@staticmethod
 	def guessGroup():

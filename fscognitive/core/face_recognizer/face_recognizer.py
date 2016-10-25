@@ -28,6 +28,8 @@ from commons import Utilities
 import cv2
 import sys
 import time
+import glob
+import os
 
 class FaceRecognizer:
 	def __init__(self):
@@ -38,7 +40,9 @@ class FaceRecognizer:
 		self.videoCapturer.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
 		self.facesCaptured = 1
 
-	def startFaceCapturing(self):
+	def startFaceCapturing(self, isRegister):
+		if isRegister == False:
+			self.facesCaptured = 3
 		while self.facesCaptured < 4:
 			returnCode, frame = self.videoCapturer.read()
 
@@ -51,16 +55,11 @@ class FaceRecognizer:
 			)
 
 			for (x, y, w, h) in faces:
-				x = x - 40
-				h = h + 80
-				y = y - 40
-				w = w + 80
-				face = frame[y : y + h , x : x + w]
-				cv2.rectangle(frame, (x, y), (x+w,y+h), (0, 255, 0), 2)
 				filePath = Utilities.absolutePathForFile(__file__, 'tmp/face%d.jpg' % self.facesCaptured)
 				self.facesCaptured += 1
-				cv2.imwrite(filePath, face)
-				time.sleep(1)
+				cv2.imwrite(filePath, frame)
+				if isRegister:
+					time.sleep(2)
 				break
 
 			if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -76,13 +75,5 @@ class FaceRecognizer:
 		cv2.destroyAllWindows()
 
 	def capturedFaces(self):
-		faces = []
-		for index in range(1,4):
-			filePath = Utilities.absolutePathForFile(__file__, 'tmp/face%d.jpg' % index)
-			faces.append(filePath)
-		return faces
-
-	def __enlargeImage(self, image):
-		# First make it 16 times larger
-		image = cv2.resize(image, (0,0), fx=4, fy=4)
-		return image
+		dir = os.path.dirname(__file__)
+		return glob.glob(os.path.join(dir, 'tmp') + "/*.jpg")

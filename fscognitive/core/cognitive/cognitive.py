@@ -32,7 +32,7 @@ class Cognitive(object):
 	def __init__(self):
 		super(Cognitive, self).__init__()
 		self.api = cognitive_face
-		KEY = 'Place your key here'
+		KEY = '8ce25bf3845a42fcbfc41b406fdcac88'
 		self.api.Key.set(KEY)
 
 	@abc.abstractmethod

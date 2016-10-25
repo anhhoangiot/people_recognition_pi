@@ -41,56 +41,19 @@ class CameraController(object):
 		group.save()
 		person = group.newPersonWithName(name)
 		person.save()
-		faces = self.__record()
+		faces = self.__record(True)
 		for face in faces:
 			personFace = person.newFaceFromImage(face)
 			personFace.save()
+		group.cognitive.train()
 
-	def verifyPerson(self):
+	def idetifyPerson(self):
 		ownerGroup = ModelFactory.ownerGroup()
-		owners = ownerGroup.owners()
-		faces = self.__record()
-		isOwner = False
-		considerList = []
-		for person in owners:
-			confidence = person.verify(faces)
-			confidenceLevel = Confidence.confidenceLevel(confidence)
-			if confidenceLevel == Confidence.High:
-				isOwner = True
-				break
-			elif confidenceLevel == Confidence.Medium:
-				considerList.append({'person': person, 'confidence': confidence})
-			
-		if isOwner:
-			return self.__highConfidence(person)
-		elif len(considerList) > 0:
-			return self.__mediumConfidence(considerList)
-		else:
-			return self.__lowConfidence()
+		faces = self.__record(False)
+		ownerGroup.identify(faces)		
 
-	def __highConfidence(self, person):
-		print 'Hello, %s' % person.name
-		return True
-
-	def __mediumConfidence(self, considerList):
-		highestCofidence = 0.0
-		highestCofidencePerson = None
-		for dictionary in considerList:
-			if dictionary['confidence'] > highestCofidence:
-				highestCofidence = dictionary['confidence']
-				highestCofidencePerson = dictionary['person']
-		print 'Sorry, I might be wrong. Are you %s?' % highestCofidencePerson.name
-		return False
-
-	def __lowConfidence(self):
-		print 'Sorry, I don\'t recognize you.'
-		# Will be person real name 
-		name = raw_input('Name:')
-		self.__registerPersonWithName(name)
-		return False
-
-	def __record(self):
+	def __record(self, isRegister):
 		print 'Start capturing...'
 		recognizer = FaceRecognizer()
-		recognizer.startFaceCapturing()
+		recognizer.startFaceCapturing(isRegister)
 		return recognizer.capturedFaces()

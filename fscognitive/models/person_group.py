@@ -28,6 +28,7 @@ from activeRecords import PersonGroupActiveRecords
 from core.cognitive import PersonGroupCognitive
 from base_model import BaseModel
 from person import Person
+from person_face import PersonFace
 
 class PersonGroup(BaseModel):
 	def __init__(self, id, name):
@@ -40,10 +41,17 @@ class PersonGroup(BaseModel):
 	def newPersonWithName(self, name):
 		return Person(self, name)
 
-	def owners(self):
-		people = []
-		for personRecord in self.activeRecords.owners():
-			person = self.newPersonWithName(personRecord[2])
-			person.id = personRecord[0]
-			people.append(person)
-		return people
+	def identify(self, faces):
+		listFaces = []
+		personFace = PersonFace()
+		response = personFace.cognitive.api.face.detect(faces[0])
+		detectedFaces = personFace.cognitive.dictionarize(response)
+		for face in detectedFaces:
+			listFaces.append(face["faceId"])
+		recognizedPeople = self.cognitive.identify(listFaces)
+		dummyPerson = self.newPersonWithName('dummy')
+		peopleToSayHello = []
+		for person in recognizedPeople:
+			peopleToSayHello.append(dummyPerson.activeRecords.find(person)[0])
+		for person in peopleToSayHello:
+			print 'Xin chao %s' % person

@@ -46,8 +46,8 @@ def start(condition):
 			camera.registerPerson()
 		else:
 			while True:	
-				camera.verifyPerson()
-				time.sleep(30)
+				camera.idetifyPerson()
+				time.sleep(10)
 
 condition = threading.Condition()
 setUpThread = threading.Thread(name="setup", target=setup, args=(condition,))

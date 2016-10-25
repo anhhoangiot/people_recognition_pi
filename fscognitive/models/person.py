@@ -31,7 +31,7 @@ from person_face import PersonFace
 from confidence import Confidence
 
 class Person(BaseModel):
-	def __init__(self, group, name):
+	def __init__(self, group=None, name=None):
 		super(Person, self).__init__()
 		self.group = group
 		self.name = name
@@ -41,26 +41,3 @@ class Person(BaseModel):
 
 	def newFaceFromImage(self, image):
 		return PersonFace(self, image)
-
-
-	def verify(self, faces):
-		verifyResults = []	
-		for face in faces:
-			personFace = self.newFaceFromImage(face)
-			personFace.cognitive.detect()
-			result = personFace.cognitive.verify(self)
-			if result != None:
-				verifyResults.append(result)
-		return self.__confidence(verifyResults)
-		
-	def __confidence(self, results):
-		weight = 1.0
-		finalConfidence = 0.0
-		if len(results) > 0:
-			for result in results:
-				confidence = 0.0
-				if result != None and result['isIdentical'] == True:
-					confidence = weight * result['confidence']
-				finalConfidence += confidence
-			finalConfidence /= len(results)
-		return finalConfidence
