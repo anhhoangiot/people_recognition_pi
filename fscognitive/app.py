@@ -29,29 +29,37 @@ from models import ModelFactory
 from controllers import CameraController
 import threading
 import time
-
-
+import argparse
 
 def setup(condition):
 	Configurator.configApplication()
 	with condition:
 		condition.notifyAll()
 
-def start(condition):
+def start(condition, datasets=None, interval=0):
 	with condition:
-		condition.wait()
 		group = ModelFactory.registeredUsersGroup()
 		camera = CameraController()
-		if group.activeRecords.containsPerson() == False:
-			camera.registerPerson()
-		else:
-			while True:	
+		if datasets:
+			condition.wait()
+			if group.activeRecords.containsPerson() == False:
+				camera.registerPerson()
+		if interval > 0:
+			while True:
 				camera.idetifyPerson()
-				time.sleep(10)
+				time.sleep(interval)
 
-condition = threading.Condition()
-setUpThread = threading.Thread(name="setup", target=setup, args=(condition,))
-mainThread = threading.Thread(name="main", target=start, args=(condition,))
-
-setUpThread.start()
-mainThread.start()
+if __name__ == "__main__":
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-d', '--datasets')
+	parser.add_argument('-i', '--interval', type=float)
+	args = parser.parse_args()
+	condition = threading.Condition()
+	if args.datasets:
+		setUpThread = threading.Thread(name="setup", target=setup, args=(condition,))
+		mainThread = threading.Thread(name="main", target=start, args=(condition, args.datasets, 0,))
+		setUpThread.start()
+		mainThread.start()
+	if args.interval:
+		mainThread = threading.Thread(name="main", target=start, args=(condition, None, args.interval,))
+		mainThread.start()
