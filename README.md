@@ -2,8 +2,7 @@
 
 ![image](https://a2ua.com/cognitive/cognitive-004.jpg)
 
-FSCognitive is an IoT project which demonstrates how to use Microsoft Cognitive Services to make an IoT LED.
-FSCognitive allows you to control a LED in real time using voice and secure with face recognition.
+FSCognitive is an IoT project which demonstrates how to use Microsoft Cognitive Services to make a device which can recognize and say hello to person walks through.
 
 ## Getting Started
 
