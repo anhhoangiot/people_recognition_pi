@@ -26,6 +26,12 @@ Then run this command
 ```
 pip install -U cognitive-face
 ```
+Finally, create a new file named secret.json in core/cognitive. Content of newly created file looks like this:
+```json
+{
+    "secret": "YOUR_API_TOKEN"
+}
+```
 
 ## Running the tests
 
