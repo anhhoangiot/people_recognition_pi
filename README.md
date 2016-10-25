@@ -33,7 +33,16 @@ Finally, create a new file named secret.json in core/cognitive. Content of newly
 }
 ```
 
-## Running the tests
+## Running the this project
+
+On terminal / cmd type following command to create a group and train:
+``` 
+python app.py -d PATH_TO_TRAIN_FOLDER
+```
+On terminal / cmd type following command to start recognizing:
+```
+python app.py -i TIME_INTERVAL_BETWEEN_EACH_SESSION
+```
 
 ## Authors
 
