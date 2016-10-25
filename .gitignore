@@ -93,3 +93,5 @@ secret.json
 *.jpg
 
 TODO.md
+*.db
+name.txt
