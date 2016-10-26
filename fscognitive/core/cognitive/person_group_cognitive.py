@@ -31,7 +31,7 @@ from commons import EventLogger
 logger = EventLogger.logger()
 
 class PersonGroupCognitive(Cognitive):
-	"""	Intermidiate module works as an interface between group model and MS service
+	"""Intermidiate module works as an interface between group model and MS service
 
 		Attributes:
 			group (PersonGroup): group object which initialize instance of this class
@@ -43,6 +43,15 @@ class PersonGroupCognitive(Cognitive):
 		self.group = group
 
 	def identify(self, faces):
+		"""Identify a group of people from captured faces
+			
+			Args:
+				faces (Array): list of captured faces id returned from MS service
+
+			Returns:
+				Array: list of people identified from faces
+
+		"""
 		logger.log('Identifying...')
 		candidates = []
 		try:
@@ -58,7 +67,9 @@ class PersonGroupCognitive(Cognitive):
 			return candidates
 
 	def save(self):
+		"""Save a new person group in MS service"""
 		logger.log('Saving person group...')
+		# Only create group if it does not exist
 		if self.isExisted() == False:
 			try:
 				self.api.person_group.create(self.group.id, self.group.name)
@@ -72,6 +83,7 @@ class PersonGroupCognitive(Cognitive):
 		return True
 
 	def isExisted(self):
+		"""Check if group is existed or not"""
 		try:
 			self.api.person_group.get(self.group.id)
 			return True
@@ -80,11 +92,13 @@ class PersonGroupCognitive(Cognitive):
 			return False
 
 	def train(self):
-		logger.log('Enqueue group training task')
+		"""Enqueue a group to be trained"""
+		logger.log('Enqueue group training task...')
 		result = self.api.person_group.train(self.group.id)
 		self.processResponse(result, self.printResponse)
 
 	def trainingStatus(self):
+		"""Get training status"""
 		logger.log('Fetching training status...')
 		result = self.api.person_group.get_status(self.group.id)
 		return self.processResponse(result, self.printResponse)
