@@ -27,6 +27,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 from commons import Configurator
 from models import ModelFactory
 from controllers import CameraController
+from commons import EventLogger
 import threading
 import time
 import argparse
@@ -36,7 +37,7 @@ def setup(condition):
 	with condition:
 		condition.notifyAll()
 
-def start(condition, data_path=None, interval=0):
+def start(condition, data_path=None, interval=0, verbose=True):
 	with condition:
 		group = ModelFactory.registeredUsersGroup()
 		camera = CameraController()
@@ -52,13 +53,35 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-d', '--data_path')
 	parser.add_argument('-i', '--interval', type=float)
+	parser.add_argument('-v', '--verbose', action='store_true')
+
 	args = parser.parse_args()
 	condition = threading.Condition()
+	verbose = True
+
+	if args.verbose is None:
+		verbose = False
+
+	EventLogger.logger(verbose)
+
 	if args.data_path:
-		setUpThread = threading.Thread(name="setup", target=setup, args=(condition,))
-		mainThread = threading.Thread(name="main", target=start, args=(condition, args.data_path, 0,))
+		setUpThread = threading.Thread(
+			name="setup", 
+			target=setup, 
+			args=(condition,)
+		)
+		mainThread = threading.Thread(
+			name="main", 
+			target=start, 
+			args=(condition, args.data_path, 0, verbose,)
+		)
 		setUpThread.start()
 		mainThread.start()
+
 	if args.interval:
-		mainThread = threading.Thread(name="main", target=start, args=(condition, None, args.interval,))
+		mainThread = threading.Thread(
+			name="main", 
+			target=start, 
+			args=(condition, None, args.interval, verbose,)
+		)
 		mainThread.start()

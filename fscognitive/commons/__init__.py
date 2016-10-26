@@ -26,3 +26,4 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 
 from configurator import Configurator
 from utilities import Utilities
+from event_logger import EventLogger

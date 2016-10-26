@@ -26,7 +26,9 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 
 from cognitive import Cognitive
 from person_cognitive import PersonCognitive
+from commons import EventLogger
 
+logger = EventLogger.logger()
 
 class PersonGroupCognitive(Cognitive):
 	"""	Intermidiate module works as an interface between group model and MS service
@@ -41,6 +43,7 @@ class PersonGroupCognitive(Cognitive):
 		self.group = group
 
 	def identify(self, faces):
+		logger.log('Identifying...')
 		candidates = []
 		try:
 			response = self.api.face.identify(faces, self.group.id)
@@ -50,18 +53,21 @@ class PersonGroupCognitive(Cognitive):
 				candidate = person['candidates'][0]['personId']
 				candidates.append(candidate)
 		except self.api.CognitiveFaceException as exception:
-			print exception
+			logger.log(exception)
 		finally:
 			return candidates
 
 	def save(self):
+		logger.log('Saving person group...')
 		if self.isExisted() == False:
 			try:
 				self.api.person_group.create(self.group.id, self.group.name)
-				print 'Created person group with name %s' % self.group.name
+				logger.log(
+					'Created person group with name %s' % self.group.name
+				)
 				return True
 			except self.api.CognitiveFaceException as exception:
-				print exception
+				logger.log(exception)
 				return False
 		return True
 
@@ -69,15 +75,17 @@ class PersonGroupCognitive(Cognitive):
 		try:
 			self.api.person_group.get(self.group.id)
 			return True
-		except self.api.CognitiveFaceException as e:
+		except self.api.CognitiveFaceException as exception:
+			logger.log(exception)
 			return False
 
 	def train(self):
+		logger.log('Enqueue group training task')
 		result = self.api.person_group.train(self.group.id)
-		print 'Enqueue group training task'
 		self.processResponse(result, self.printResponse)
 
 	def trainingStatus(self):
+		logger.log('Fetching training status...')
 		result = self.api.person_group.get_status(self.group.id)
 		return self.processResponse(result, self.printResponse)
 

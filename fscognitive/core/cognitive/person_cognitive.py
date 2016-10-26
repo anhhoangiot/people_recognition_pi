@@ -25,6 +25,9 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 '''
 
 from cognitive import Cognitive
+from commons import EventLogger
+
+logger = EventLogger.logger()
 
 class PersonCognitive(Cognitive):
 	def __init__(self, person):
@@ -38,6 +41,7 @@ class PersonCognitive(Cognitive):
 				self.processResponse(result, None)
 				return True
 			except self.api.CognitiveFaceException as e:
+				logger.log(e)
 				return False
 		return True
 
@@ -47,6 +51,7 @@ class PersonCognitive(Cognitive):
 				result = self.api.person.get(self.person.group.id, self.person.id)
 				return True
 			except self.api.CognitiveFaceException as e:
+				logger.log(e)
 				return False
 		return False
 

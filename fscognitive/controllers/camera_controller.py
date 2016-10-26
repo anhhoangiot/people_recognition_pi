@@ -28,8 +28,11 @@ from models import ModelFactory
 from models import Confidence
 from core.face_recognizer import FaceRecognizer
 from commons import Utilities
+from commons import EventLogger
 import os
 import time
+
+logger = EventLogger.logger()
 
 class CameraController(object):
 	def __init__(self):
@@ -77,7 +80,7 @@ class CameraController(object):
 		registeredUsersGroup.identify(faces)		
 
 	def __record(self, isRegister):
-		print 'Start capturing...'
+		logger.log('Start capturing...')
 		recognizer = FaceRecognizer()
 		recognizer.startFaceCapturing(isRegister)
 		return recognizer.capturedFaces()

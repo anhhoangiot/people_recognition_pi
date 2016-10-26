@@ -25,8 +25,12 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 '''
 
 from cognitive import Cognitive
+from commons import EventLogger
 
 class PersonFaceCognitive(Cognitive):
+
+	logger = EventLogger.logger()
+
 	def __init__(self, face):
 		super(PersonFaceCognitive, self).__init__()
 		self.face = face
@@ -41,7 +45,8 @@ class PersonFaceCognitive(Cognitive):
 				)
 				self.processResponse(result, self.__savePersistedFace)
 				return True
-			except self.api.CognitiveFaceException as e:
+			except self.api.CognitiveFaceException as exception:
+				logger.log(exception)
 				return False
 		return True
 
@@ -54,7 +59,8 @@ class PersonFaceCognitive(Cognitive):
 					self.face.id
 				)
 				return True
-			except self.api.CognitiveFaceException as e:
+			except self.api.CognitiveFaceException as exception:
+				logger.log(exception)
 				return False
 		return False
 
@@ -63,8 +69,8 @@ class PersonFaceCognitive(Cognitive):
 			result = self.api.face.detect(self.face.image)
 			self.processResponse(result, self.__saveNonPersistedFace)
 			return True
-		except Exception as e:
-			print e
+		except self.api.CognitiveFaceException as exception:
+			logger.log(exception)
 			return False
 
 	def verify(self, person):
@@ -75,10 +81,9 @@ class PersonFaceCognitive(Cognitive):
 				person.group.id,
 				person.id, 
 			)
-			# print result
 			return self.dictionarize(result)
-		except Exception as e:
-			print e
+		except self.api.CognitiveFaceException as exception:
+			logger.log(exception)
 
 	def __savePersistedFace(self, response):
 		self.face.id = response['persistedFaceId']
