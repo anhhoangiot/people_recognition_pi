@@ -47,8 +47,11 @@ class Utilities:
 
 	@staticmethod
 	def absolutePathForFile(directory, fileName):
-		dir = os.path.dirname(directory)
-		return os.path.join(dir, fileName)
+		if os.path.isdir(directory):
+			return os.path.join(directory, fileName)
+		else:
+			dir = os.path.dirname(directory)
+			return os.path.join(dir, fileName)
 
 	@staticmethod
 	def projectPath():
@@ -57,3 +60,11 @@ class Utilities:
 	@staticmethod
 	def defaultDataPath():
 		return os.path.join(Utilities.projectPath(), 'resources\\datasets\\')
+
+	@staticmethod
+	def data_path_of_name(name):
+		return os.path.join(Utilities.defaultDataPath(), name)
+
+	@staticmethod
+	def names_dir():
+		return os.path.join(Utilities.projectPath(), 'resources\\sounds\\names\\')

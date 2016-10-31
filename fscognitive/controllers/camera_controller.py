@@ -25,10 +25,10 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 '''
 
 from models import ModelFactory
-from models import Confidence
+from models import Person
 from core.face_recognizer import FaceRecognizer
-from commons import Utilities
 from commons import EventLogger
+from commons import Utilities
 import os
 import time
 
@@ -42,32 +42,17 @@ class CameraController(object):
 		if data_path == 'default':
 			data_path = Utilities.defaultDataPath()
 		if Utilities.fileExistsAtPath(data_path):
-			for folder in os.listdir(data_path):
-				group = ModelFactory.registeredUsersGroup()
-				group.save()
-				self.__registerPersonWithDataAtPath(folder)
-
-	def __registerPersonWithDataAtPath(self, folder):
-		data_path = Utilities.absolutePathForFile(
-			Utilities.defaultDataPath(),
-			folder
-		)
-
-		with open(os.path.join(data_path, 'name.txt'), 'r') as file:
-			name = file.read()
 			group = ModelFactory.registeredUsersGroup()
-			person = group.newPersonWithName(name)
-			person.save()
+			group.save()
+			for folder in os.listdir(data_path):
+				if folder != '.gitkeep':
+					print 'Registering %s...' %folder
+					Person.register(group, folder)
+			self.__train_group()
 
-		files = os.listdir(data_path)
-
-		for file in files:
-			if file != 'name.txt':
-				personFace = person.newFaceFromImage(os.path.join(data_path, file))
-				personFace.save()
-
+	def __train_group(self):
+		group = ModelFactory.registeredUsersGroup()
 		group.cognitive.train()
-
 		while True:
 			train_result = group.cognitive.trainingStatus()
 			if train_result['status'] == 'succeeded':

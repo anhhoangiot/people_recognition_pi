@@ -36,7 +36,8 @@ class PersonActiveRecords(BaseActiveRecords):
 			CREATE TABLE IF NOT EXISTS person (
 				personId text,
 				groupId text,
-				name text
+				name text,
+				alias text
 			)
 		'''
 		self.execute(createTableQuery)
@@ -52,15 +53,15 @@ class PersonActiveRecords(BaseActiveRecords):
 
 	def find(self, id):
 		getOwner = '''
-			SELECT name FROM person WHERE personId="%s"
+			SELECT name, alias FROM person WHERE personId="%s"
 		''' % id
 		people = self.executeQuery(getOwner)
 		return people.fetchone()
 
 	def __insert(self):
 		insertPerson = '''
-			INSERT INTO person VALUES ("%s", "%s", "%s")
-		''' % (str(self.person.id), self.person.group.id, self.person.name)
+			INSERT INTO person VALUES ("%s", "%s", "%s", "%s")
+		''' % (str(self.person.id), self.person.group.id, self.person.name, self.person.alias)
 		self.execute(insertPerson)
 
 	def __delete(self):

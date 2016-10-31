@@ -28,6 +28,7 @@ from commons import Configurator
 from models import ModelFactory
 from controllers import CameraController
 from commons import EventLogger
+from core import Speaker
 import threading
 import time
 import argparse
@@ -37,7 +38,7 @@ def setup(condition):
 	with condition:
 		condition.notifyAll()
 
-def start(condition, data_path=None, interval=0, verbose=True):
+def start(condition, data_path=None, interval=0):
 	with condition:
 		group = ModelFactory.registeredUsersGroup()
 		camera = CameraController()
@@ -57,12 +58,10 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 	condition = threading.Condition()
-	verbose = True
 
-	if args.verbose is None:
-		verbose = False
+	EventLogger.logger(verbose=args.verbose)
 
-	EventLogger.logger(verbose)
+	# Speaker.create_voice('Hoàng Anh', 'anhh3')
 
 	if args.data_path:
 		setUpThread = threading.Thread(
@@ -73,7 +72,7 @@ if __name__ == "__main__":
 		mainThread = threading.Thread(
 			name="main", 
 			target=start, 
-			args=(condition, args.data_path, 0, verbose,)
+			args=(condition, args.data_path, 0,)
 		)
 		setUpThread.start()
 		mainThread.start()
@@ -82,6 +81,6 @@ if __name__ == "__main__":
 		mainThread = threading.Thread(
 			name="main", 
 			target=start, 
-			args=(condition, None, args.interval, verbose,)
+			args=(condition, None, args.interval,)
 		)
 		mainThread.start()

@@ -24,7 +24,41 @@ FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TOR
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-from configurator import Configurator
-from utilities import Utilities
-from event_logger import EventLogger
-from process_parallel import ProcessParallel
+from multiprocessing import Process
+
+class ProcessParallel(object):
+    """
+    To Process the  functions parallely
+
+    """    
+    def __init__(self, *jobs):
+        """
+        """
+        self.jobs = jobs
+        self.processes = []
+
+    def fork_processes(self):
+        """
+        Creates the process objects for given function deligates
+        """
+        for job in self.jobs:
+            proc  = Process(target=job)
+            self.processes.append(proc)
+
+    def fork_threads(self):
+        for job in self.jobs:
+            self.processes.append(job)
+
+    def start_all(self):
+        """
+        Starts the functions process all together.
+        """
+        for proc in self.processes:
+            proc.start()
+
+    def join_all(self):
+        """
+        Waits untill all the functions executed.
+        """
+        for proc in self.processes:
+            proc.join()

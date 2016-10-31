@@ -26,6 +26,7 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 
 from cognitive import Cognitive
 from commons import EventLogger
+from thread import *
 
 logger = EventLogger.logger()
 

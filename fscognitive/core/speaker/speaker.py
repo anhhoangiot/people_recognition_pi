@@ -24,19 +24,50 @@ FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TOR
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 
-class Speaker(object):
-	def __init__(self, textToSpeech):
+import requests
+import json
+import wget
+import pygame
+import os
+import time
+from commons import Utilities
+
+class Speaker():
+	def __init__(self):
 		super(Speaker, self).__init__()
-		self.textToSpeech = textToSpeech
 
-	def speak(self):
-		print 'Speaking: %s' % self.textToSpeech
+	@staticmethod
+	def speak(alias):
+		sounds_dir = Utilities.names_dir()
+		save_dir = Utilities.absolutePathForFile(sounds_dir, alias + '.mp3')
+		if os.path.exists(save_dir) == True:
+			# print save_dir
+			pygame.mixer.init(44100, -16, 2, 2048)
+			pygame.mixer.music.load(save_dir)
+			pygame.mixer.music.play()
+			time.sleep(1.05)
 
-	def __createVoice(self):
-		print 'Creating voice...'
-
-	def __voiceFromOpenFPT(self):
-		print 'Making request to openfpt...'
-
-	def __downloadVoice(self):
-		print 'Downloading voice...'
+	@staticmethod
+	def create_voice(text, alias):
+		sounds_dir = Utilities.names_dir()
+		save_dir = Utilities.absolutePathForFile(sounds_dir, alias + '.mp3')
+		if os.path.exists(save_dir) == False:
+			headers = {
+				'Content-Type': 'application/json',
+				'api_key': 'b5db987b5a944ff78097d435a5a564dc'
+			}
+			try:
+				response = requests.request(
+					'POST',
+					'http://api.openfpt.vn/text2speech/v3',
+					headers=headers,
+					data=text
+				)
+				if response.status_code not in (200, 202):
+					print response.status_code
+				if response.text:
+					result = response.json()
+					if result['async']:
+						wget.download(result['async'], save_dir)
+			except Exception as e:
+				print e

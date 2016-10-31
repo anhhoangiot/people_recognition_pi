@@ -29,6 +29,7 @@ from core.cognitive import PersonGroupCognitive
 from base_model import BaseModel
 from person import Person
 from person_face import PersonFace
+from core import Speaker
 
 class PersonGroup(BaseModel):
 	def __init__(self, id, name):
@@ -51,7 +52,10 @@ class PersonGroup(BaseModel):
 		recognizedPeople = self.cognitive.identify(listFaces)
 		dummyPerson = self.newPersonWithName('dummy')
 		peopleToSayHello = []
-		for person in recognizedPeople:
-			peopleToSayHello.append(dummyPerson.activeRecords.find(person)[0])
+		for person_id in recognizedPeople:
+			peopleToSayHello.append(dummyPerson.activeRecords.find(person_id)[1])
+		if len(peopleToSayHello) > 0: 
+			Speaker.speak('hello')
 		for person in peopleToSayHello:
 			print 'Xin chao %s' % person
+			# Speaker.speak(person)

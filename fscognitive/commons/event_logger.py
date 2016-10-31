@@ -33,7 +33,7 @@ class EventLogger(object):
 
     @classmethod
     def logger(cls, verbose=True):
-        if cls.instance is None:
+        if cls.instance == None:
             cls.instance = cls(verbose)
         return cls.instance
 
@@ -41,6 +41,7 @@ class EventLogger(object):
         super(EventLogger, self).__init__()
         self.logs_queue = []
         self.verbose = verbose
+        print verbose
         self.log_events()
 
     def log(self, log):

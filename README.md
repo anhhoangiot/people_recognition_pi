@@ -24,6 +24,7 @@ git clone https://github.com/anhhoangiot/people_recognition_pi.git
 Then run this command
 ```
 pip install -U cognitive-face
+pip install -U pygame
 ```
 Finally, create a new file named secret.json in core/cognitive. Content of newly created file looks like this:
 ```json

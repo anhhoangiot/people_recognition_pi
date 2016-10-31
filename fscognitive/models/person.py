@@ -29,15 +29,63 @@ from core.cognitive import PersonCognitive
 from base_model import BaseModel
 from person_face import PersonFace
 from confidence import Confidence
+from core.speaker import Speaker
+from commons import Utilities
+from commons import EventLogger
+from commons import ProcessParallel
+import threading
+import os
 
 class Person(BaseModel):
-	def __init__(self, group=None, name=None):
+	def __init__(self, group=None, name=None, alias=None):
 		super(Person, self).__init__()
 		self.group = group
 		self.name = name
 		self.id = ''
 		self.activeRecords = PersonActiveRecords(self)
 		self.cognitive = PersonCognitive(self)
+		self.alias = alias
 
 	def newFaceFromImage(self, image):
 		return PersonFace(self, image)
+
+	@staticmethod
+	def register(group, alias):
+		data_path = Utilities.absolutePathForFile(
+			Utilities.defaultDataPath(),
+			alias
+		)
+
+		with open(os.path.join(data_path, 'name.txt'), 'r') as file:
+			name = file.read()
+			person = group.newPersonWithName(name)
+			person.alias = alias;
+			create_voice_thread = threading.Thread(
+				name="create_voice",
+				target=Person.__create_voice,
+				args=(name, alias)
+			)
+			person.save()
+
+			save_faces_thread = threading.Thread(
+				name="save_faces",
+				target=Person.__save_faces,
+				args=(person, data_path)
+			)
+
+			processes = ProcessParallel(create_voice_thread, save_faces_thread)
+			processes.fork_threads()
+			processes.start_all()
+			processes.join_all()
+
+	@staticmethod
+	def __create_voice(name, alias):
+		Speaker.create_voice(name, alias)
+
+	@staticmethod
+	def __save_faces(person, data_path):
+		files = os.listdir(data_path)
+		for file in files:
+			if file != 'name.txt':
+				personFace = person.newFaceFromImage(os.path.join(data_path, file))
+				personFace.save()

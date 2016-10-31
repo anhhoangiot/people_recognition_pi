@@ -27,9 +27,9 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 from cognitive import Cognitive
 from commons import EventLogger
 
-class PersonFaceCognitive(Cognitive):
+logger = EventLogger.logger()
 
-	logger = EventLogger.logger()
+class PersonFaceCognitive(Cognitive):
 
 	def __init__(self, face):
 		super(PersonFaceCognitive, self).__init__()
