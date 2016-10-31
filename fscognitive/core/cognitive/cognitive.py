@@ -33,19 +33,19 @@ class Cognitive(object):
 	def __init__(self):
 		super(Cognitive, self).__init__()
 		self.api = cognitive_face
-		with open(Utilities.absolutePathForFile(__file__,'secret.json')) as data_file:
+		with open(Utilities.absolute_path(__file__,'secret.json')) as data_file:
 			data = json.load(data_file)
 			KEY = data['secret']
 			self.api.Key.set(KEY)
 
 	@abc.abstractmethod
 	def processResponse(self, response, callback=None):
-		''' Process json message return by service '''
+		"""Process json message return by service"""
 		return
 
 	@abc.abstractmethod
 	def save(self):
-		''' Make a request to create a record in MS cognitive service '''
+		"""Make a request to create a record in MS cognitive service"""
 		return
 
 	def stringify(self, response):
@@ -54,5 +54,5 @@ class Cognitive(object):
 	def dictionarize(self, response):
 		return json.loads(self.stringify(response))
 
-	def printResponse(self, response):
+	def print_response(self, response):
 		print response

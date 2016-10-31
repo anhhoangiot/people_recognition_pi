@@ -35,37 +35,66 @@ import time
 logger = EventLogger.logger()
 
 class CameraController(object):
+	"""Control camera device to register or identify people"""
 	def __init__(self):
 		super(CameraController, self).__init__()
 
-	def registerGroup(self, data_path):
-		if data_path == 'default':
-			data_path = Utilities.defaultDataPath()
-		if Utilities.fileExistsAtPath(data_path):
-			group = ModelFactory.registeredUsersGroup()
-			group.save()
-			for folder in os.listdir(data_path):
-				if folder != '.gitkeep':
-					print 'Registering %s...' %folder
-					Person.register(group, folder)
-			self.__train_group()
+	def register(self, data_path):
+		"""Register a group of people specified in data folder and train
 
-	def __train_group(self):
-		group = ModelFactory.registeredUsersGroup()
+			Args:
+				data_path (string): train data folder
+		"""
+		if data_path == 'default':
+			data_path = Utilities.train_data_path()
+		if Utilities.file_exists(data_path):
+			group = ModelFactory.registered_group()
+			group.save()
+			for alias_name in os.listdir(data_path):
+				# Ignore gitkeep file and collect data from all folders
+				if alias_name != '.gitkeep':
+					logger.log('Registering %s...' %alias_name)
+					Person.register(group, alias_name)
+			# After everything is done, call api to train newly created group
+			self.train()
+
+	def identify(self):
+		"""Identify a person or a group of people captured by camera"""
+		registered_group = ModelFactory.registered_group()
+		faces = self.record(False)
+		registered_group.identify(faces)
+	# 
+	# Functions for internal uses
+	#
+
+	def train(self):
+		"""Enqueue an event to train person group and report train progress"""
+		group = ModelFactory.registered_group()
 		group.cognitive.train()
+		# Keep querying training status every 1 second
 		while True:
 			train_result = group.cognitive.trainingStatus()
-			if train_result['status'] == 'succeeded':
+			# Completed training event will have status succeeded or failed
+			if train_result['status'] == 'succeeded' or 
+			   train_result['status'] == 'failed':
 				break
-			time.sleep(1)
+			time.sleep(1)		
 
-	def idetifyPerson(self):
-		registeredUsersGroup = ModelFactory.registeredUsersGroup()
-		faces = self.__record(False)
-		registeredUsersGroup.identify(faces)		
+	def record(self, is_register):
+		"""Start the camera and capture faces
+			
+			Args:
+				is_register (bool): determine if the session is registering or identifying
+					If this argument is true then camera will capture 3 photos of user.
+					Otherwise, only 1 photo is captured
 
-	def __record(self, isRegister):
+			Returns:
+				Array: an array of captured images
+
+		"""
 		logger.log('Start capturing...')
-		recognizer = FaceRecognizer()
-		recognizer.startFaceCapturing(isRegister)
-		return recognizer.capturedFaces()
+		# Remember that one computer can have multiple cameras
+		# The first camera will have index 0 and so on
+		recognizer = FaceRecognizer(1)
+		recognizer.start_capturing(is_register)
+		return recognizer.captured_faces()

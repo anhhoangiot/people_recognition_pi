@@ -38,8 +38,8 @@ class Speaker():
 
 	@staticmethod
 	def speak(alias):
-		sounds_dir = Utilities.names_dir()
-		save_dir = Utilities.absolutePathForFile(sounds_dir, alias + '.mp3')
+		sounds_dir = Utilities.voices_path()
+		save_dir = Utilities.absolute_path(sounds_dir, alias + '.mp3')
 		if os.path.exists(save_dir) == True:
 			# print save_dir
 			pygame.mixer.init(44100, -16, 2, 2048)
@@ -49,8 +49,8 @@ class Speaker():
 
 	@staticmethod
 	def create_voice(text, alias):
-		sounds_dir = Utilities.names_dir()
-		save_dir = Utilities.absolutePathForFile(sounds_dir, alias + '.mp3')
+		sounds_dir = Utilities.voices_path()
+		save_dir = Utilities.absolute_path(sounds_dir, alias + '.mp3')
 		if os.path.exists(save_dir) == False:
 			headers = {
 				'Content-Type': 'application/json',

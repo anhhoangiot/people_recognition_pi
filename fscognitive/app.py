@@ -40,14 +40,14 @@ def setup(condition):
 
 def start(condition, data_path=None, interval=0):
 	with condition:
-		group = ModelFactory.registeredUsersGroup()
+		group = ModelFactory.registered_group()
 		camera = CameraController()
 		if data_path:
 			condition.wait()
-			camera.registerGroup(data_path)
+			camera.register(data_path)
 		if interval > 0:
 			while True:
-				camera.idetifyPerson()
+				camera.identify()
 				time.sleep(interval)
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ class PersonGroup(BaseModel):
 		self.activeRecords = PersonGroupActiveRecords(self)
 		self.cognitive = PersonGroupCognitive(self)
 
-	def newPersonWithName(self, name):
+	def person_with_name(self, name):
 		return Person(self, name)
 
 	def identify(self, faces):
@@ -50,7 +50,7 @@ class PersonGroup(BaseModel):
 		for face in detectedFaces:
 			listFaces.append(face["faceId"])
 		recognizedPeople = self.cognitive.identify(listFaces)
-		dummyPerson = self.newPersonWithName('dummy')
+		dummyPerson = self.person_with_name('dummy')
 		peopleToSayHello = []
 		for person_id in recognizedPeople:
 			peopleToSayHello.append(dummyPerson.activeRecords.find(person_id)[1])

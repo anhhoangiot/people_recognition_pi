@@ -28,9 +28,13 @@ from person_group import PersonGroup
 
 class ModelFactory(object):
     @staticmethod
-    def registeredUsersGroup():
+    def registered_group():
         return PersonGroup('face_recognizer_robot_raspberry_pi', 'owner')
 
 	@staticmethod
-	def guessGroup():
+	def guess_group():
 		return PersonGroup('guess_group', 'guess')
+
+    @staticmethod
+    def person():
+        return ModelFactory.registered_group().person_name('dummy')

@@ -95,13 +95,13 @@ class PersonGroupCognitive(Cognitive):
 		"""Enqueue a group to be trained"""
 		logger.log('Enqueue group training task...')
 		result = self.api.person_group.train(self.group.id)
-		self.processResponse(result, self.printResponse)
+		self.processResponse(result, self.print_response)
 
 	def trainingStatus(self):
 		"""Get training status"""
 		logger.log('Fetching training status...')
 		result = self.api.person_group.get_status(self.group.id)
-		return self.processResponse(result, self.printResponse)
+		return self.processResponse(result, self.print_response)
 
 	def processResponse(self, response, callback=None):
 		response = self.dictionarize(response)

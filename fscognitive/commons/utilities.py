@@ -29,7 +29,7 @@ import sys
 
 class Utilities:
 	@staticmethod
-	def fileExistsAtPath(filePath):
+	def file_exists(filePath):
 		dir = os.path.dirname(__file__)
 		absolutePath = os.path.join(dir, filePath)
 		if os.path.exists(absolutePath) == False:
@@ -37,7 +37,7 @@ class Utilities:
 		return os.path.exists(absolutePath)
 
 	@staticmethod
-	def deleteFileAtPath(filePath):
+	def delete_file(filePath):
 		dir = os.path.dirname(__file__)
 		absolutePath = os.path.join(dir, filePath)
 		if os.path.exists(absolutePath) == True:
@@ -46,7 +46,7 @@ class Utilities:
 		return os.path.exists(absolutePath)
 
 	@staticmethod
-	def absolutePathForFile(directory, fileName):
+	def absolute_path(directory, fileName):
 		if os.path.isdir(directory):
 			return os.path.join(directory, fileName)
 		else:
@@ -54,17 +54,17 @@ class Utilities:
 			return os.path.join(dir, fileName)
 
 	@staticmethod
-	def projectPath():
+	def project_directory():
 		return os.path.dirname(__file__).strip('commons/')
 
 	@staticmethod
-	def defaultDataPath():
-		return os.path.join(Utilities.projectPath(), 'resources\\datasets\\')
+	def train_data_path():
+		return os.path.join(Utilities.project_directory(), 'resources\\datasets\\')
 
 	@staticmethod
-	def data_path_of_name(name):
-		return os.path.join(Utilities.defaultDataPath(), name)
+	def alias_path(alias):
+		return os.path.join(Utilities.train_data_path(), alias)
 
 	@staticmethod
-	def names_dir():
-		return os.path.join(Utilities.projectPath(), 'resources\\sounds\\names\\')
+	def voices_path():
+		return os.path.join(Utilities.project_directory(), 'resources\\sounds\\names\\')

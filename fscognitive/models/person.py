@@ -46,19 +46,19 @@ class Person(BaseModel):
 		self.cognitive = PersonCognitive(self)
 		self.alias = alias
 
-	def newFaceFromImage(self, image):
+	def face_from_image(self, image):
 		return PersonFace(self, image)
 
 	@staticmethod
 	def register(group, alias):
-		data_path = Utilities.absolutePathForFile(
-			Utilities.defaultDataPath(),
+		data_path = Utilities.absolute_path(
+			Utilities.train_data_path(),
 			alias
 		)
 
 		with open(os.path.join(data_path, 'name.txt'), 'r') as file:
 			name = file.read()
-			person = group.newPersonWithName(name)
+			person = group.person_with_name(name)
 			person.alias = alias;
 			create_voice_thread = threading.Thread(
 				name="create_voice",
@@ -87,5 +87,5 @@ class Person(BaseModel):
 		files = os.listdir(data_path)
 		for file in files:
 			if file != 'name.txt':
-				personFace = person.newFaceFromImage(os.path.join(data_path, file))
+				personFace = person.face_from_image(os.path.join(data_path, file))
 				personFace.save()
