@@ -5,82 +5,62 @@
 # @Project : FSCognitive
 # @Version : 1.0
 
-'''
-Copyright (c) 2016 Anh Hoang
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
-associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial 
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
-
 from commons import Configurator
-from models import ModelFactory
 from controllers import CameraController
 from commons import EventLogger
-from core import Speaker
 import threading
 import time
 import argparse
 
-def setup(condition):
-	Configurator.configApplication()
-	with condition:
-		condition.notifyAll()
 
-def start(condition, data_path=None, interval=0):
-	with condition:
-		group = ModelFactory.registered_group()
-		camera = CameraController()
-		if data_path:
-			condition.wait()
-			camera.register(data_path)
-		if interval > 0:
-			while True:
-				camera.identify()
-				time.sleep(interval)
+def setup(condition):
+    Configurator.configApplication()
+    with condition:
+        condition.notifyAll()
+
+
+def start(condition, data_path=None, interval=0, register_new=True):
+    with condition:
+        camera = CameraController()
+        if data_path:
+            condition.wait()
+            camera.register(data_path)
+        if interval > 0:
+            while True:
+                camera.identify(register_new)
+                time.sleep(interval)
+
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-d', '--data_path')
-	parser.add_argument('-i', '--interval', type=float)
-	parser.add_argument('-v', '--verbose', action='store_true')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--data_path')
+    parser.add_argument('-i', '--interval', type=float)
+    parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('-r', '--register_new', action='store_true')
 
-	args = parser.parse_args()
-	condition = threading.Condition()
+    args = parser.parse_args()
+    condition = threading.Condition()
 
-	EventLogger.logger(verbose=args.verbose)
+    EventLogger.logger(verbose=args.verbose)
 
-	# Speaker.create_voice('Hoàng Anh', 'anhh3')
+    if args.data_path:
+        setUpThread = threading.Thread(
+            name="setup",
+            target=setup,
+            args=(condition,)
+        )
+        mainThread = threading.Thread(
+            name="main",
+            target=start,
+            args=(condition, args.data_path, 0, args.register_new)
+        )
+        setUpThread.start()
+        mainThread.start()
 
-	if args.data_path:
-		setUpThread = threading.Thread(
-			name="setup", 
-			target=setup, 
-			args=(condition,)
-		)
-		mainThread = threading.Thread(
-			name="main", 
-			target=start, 
-			args=(condition, args.data_path, 0,)
-		)
-		setUpThread.start()
-		mainThread.start()
-
-	if args.interval:
-		mainThread = threading.Thread(
-			name="main", 
-			target=start, 
-			args=(condition, None, args.interval,)
-		)
-		mainThread.start()
+    if args.interval:
+        mainThread = threading.Thread(
+            name="main",
+            target=start,
+            args=(condition, None, args.interval,)
+        )
+        mainThread.start()
