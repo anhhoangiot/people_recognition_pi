@@ -14,7 +14,7 @@ import argparse
 
 
 def setup(condition):
-    Configurator.configApplication()
+    Configurator.config_application()
     with condition:
         condition.notifyAll()
 

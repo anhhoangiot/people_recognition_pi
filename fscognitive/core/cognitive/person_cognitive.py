@@ -5,59 +5,41 @@
 # @Project : FSCognitive
 # @Version : 1.0
 
-'''
-Copyright (c) 2016 Anh Hoang
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
-associated documentation files (the "Software"), to deal in the Software without restriction, 
-including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial 
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-'''
-
 from cognitive import Cognitive
 from commons import EventLogger
-from thread import *
 
 logger = EventLogger.logger()
 
+
 class PersonCognitive(Cognitive):
-	def __init__(self, person):
-		super(PersonCognitive, self).__init__()
-		self.person = person
+    def __init__(self, person):
+        super(PersonCognitive, self).__init__()
+        self.person = person
 
-	def save(self):
-		if self.isExisted() == False:
-			try:
-				result = self.api.person.create(self.person.group.id, self.person.name)
-				self.processResponse(result, None)
-				return True
-			except self.api.CognitiveFaceException as e:
-				logger.log(e)
-				return False
-		return True
+    def save(self):
+        if self.isExisted() is False:
+            try:
+                result = self.api.person.create(
+                    self.person.group.id, self.person.name)
+                self.processResponse(result, None)
+                return True
+            except self.api.CognitiveFaceException as e:
+                logger.log(e)
+                return False
+        return True
 
-	def isExisted(self):
-		if self.person.id:
-			try:
-				result = self.api.person.get(self.person.group.id, self.person.id)
-				return True
-			except self.api.CognitiveFaceException as e:
-				logger.log(e)
-				return False
-		return False
+    def isExisted(self):
+        if self.person.id:
+            try:
+                self.api.person.get(self.person.group.id, self.person.id)
+                return True
+            except self.api.CognitiveFaceException as e:
+                logger.log(e)
+                return False
+        return False
 
-	def processResponse(self, response, callback=None):
-		response = self.dictionarize(response)
-		self.person.id = response['personId']
-		if callback:
-			callback(response)
+    def processResponse(self, response, callback=None):
+        response = self.dictionarize(response)
+        self.person.id = response['personId']
+        if callback:
+            callback(response)
